@@ -1,0 +1,6 @@
+{
+}
+
+rule read =
+  parse
+  | eof { () }

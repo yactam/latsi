@@ -1,0 +1,7 @@
+(library
+ (name latsi))
+
+(menhir
+ (modules parser))
+
+(ocamllex lexer)
