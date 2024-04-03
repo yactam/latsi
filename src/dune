@@ -1,7 +1,9 @@
-(library
- (name latsi))
-
+(ocamllex
+ (modules lexer))
 (menhir
- (modules parser))
+  (modules parser)
+  (infer true)
+  (flags --explain --dump))
 
-(ocamllex lexer)
+(executable
+ (name latsi))
