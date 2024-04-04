@@ -1,4 +1,17 @@
 {
+open Parser
+exception Lexing_error of string
+
+let keywords_table = Hashtbl.create 7;;
+List.iter (fun (kwd, token) -> Hashtbl.add keywords_table kwd token) 
+                                [("IMPRIME", IMPRIME);
+                                 ("SI", SI);
+                                 ("ALORS", ALORS);
+                                 ("VAVERS", VAVERS);
+                                 ("ENTREE", ENTREE);
+                                 ("FIN", FIN);
+                                 ("REM", REM);
+                                 ("NL", NL);
 }
 
 let whitespace = [' ' '\t']+
