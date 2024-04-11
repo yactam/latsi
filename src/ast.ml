@@ -27,12 +27,10 @@ type instruction =
   | IfThen of expression * relop * expression * instruction
   | Goto of expression
   | Scan of char list
-  | Assign of (char * expression) list
+  | Assign of char * expression
   | Comment of string
   | End 
   | NewLine
-  | SousRoutine of expression
-  | Retourne
 
 type line =
   | Line of int * instruction
