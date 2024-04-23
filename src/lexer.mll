@@ -11,7 +11,14 @@ List.iter (fun (kwd, token) -> Hashtbl.add keywords_table kwd token)
                                  ("ENTREE", ENTREE);
                                  ("FIN", FIN);
                                  ("REM", REM);
-                                 ("NL", NL);
+                                 ("NL", NL)]
+
+let next_line lexbuf =
+  let pos = lexbuf.Lexing.lex_curr_p in
+  lexbuf.Lexing.lex_curr_p <-
+    { pos with pos_bol = lexbuf.Lexing.lex_curr_pos;
+               pos_lnum = pos.pos_lnum + 1
+    }
 
 let lexing_position_to_string lexbuf =
   let pos = lexbuf.Lexing.lex_curr_p in
