@@ -1,0 +1,8 @@
+58 I = (-I) + 4 * 58
+15 IMPRIME I
+16 NL
+12 J = (J - K) / 15
+13 IMPRIME J
+14 NL
+60 IMPRIME I
+61 NL
