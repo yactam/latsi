@@ -11,7 +11,8 @@
 101 NL
 110 SI N >= 0 ALORS VAVERS 130
 120 IMPRIME "Erreur : Le nombre doit etre positif ou nul."
-121 FIN
+121 NL
+122 FIN
 130 SI N <> 0 ALORS VAVERS 160
 140 A=1
 141 RETOURNE
