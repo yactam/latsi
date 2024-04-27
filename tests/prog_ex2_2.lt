@@ -1,0 +1,24 @@
+10 IMPRIME "Programme principal: Calcul de la factorielle d'un nombre."
+11 NL
+20 IMPRIME "Entrez un nombre pour calculer sa factorielle : "
+30 ENTREE N
+40 VAVERS 50
+50 SOUSROUTINE 100
+60 IMPRIME "Le resultat est : ", A
+61 NL
+70 FIN
+100 IMPRIME "Sous routine: Calcul de la factorielle."
+101 NL
+110 SI N >= 0 ALORS VAVERS 130
+120 IMPRIME "Erreur : Le nombre doit etre positif ou nul."
+121 FIN
+130 SI N <> 0 ALORS VAVERS 160
+140 A=1
+141 RETOURNE
+160 A=1
+161 I=1
+170 SI I > N ALORS VAVERS 210
+180 A=A*I
+181 I=I+1
+190 VAVERS 170
+210 RETOURNE

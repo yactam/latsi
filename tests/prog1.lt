@@ -6,5 +6,6 @@
 35 IMPRIME I, " "
 37 I = I + 1
 39 VAVERS 30
-40 FIN
+40 NL
+41 FIN
 50 IMPRIME "ne s'imprime pas"

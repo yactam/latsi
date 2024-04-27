@@ -8,7 +8,7 @@ let () =
     try
       let ast = Parser.prog Lexer.main lexbuf in
       let _ = Printf.printf "Parse:\n%s\n" (Ast.program_as_string ast) in
-      let _ = Printf.printf "\nInterpretation:\n"; Ast.eval_program ast in 
+      let _ = Printf.printf "\nInterpretation:\n"; Ast.eval_program ast in
       close_in channel;
     with
     | Lexer.Lexing_error msg ->

@@ -2,7 +2,7 @@
 open Ast
 %}
 
-%token EOF IMPRIME SI ALORS VAVERS ENTREE FIN REM NL NOTEQ LEQ LT GEQ GT EQUALS
+%token EOF IMPRIME SI ALORS VAVERS ENTREE FIN REM NL NOTEQ LEQ LT GEQ GT EQUALS SOUSROUTINE RETOURNE
 %token PLUS MINUS TIMES DIV LPAREN RPAREN COMMA CR
 %token <string> STRING
 %token <char> VAR
@@ -30,6 +30,8 @@ instr:
   | FIN { End }
   | REM s = STRING { Comment (s) }
   | NL { NewLine }
+  | SOUSROUTINE e = expression { SousRoutine e }
+  | RETOURNE { Retourne }
 
 assignment:
   | v = VAR EQUALS e = expression { (v, e) }
