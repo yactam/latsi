@@ -27,7 +27,7 @@ type instruction =
   | IfThen of expression * relop * expression * instruction
   | Goto of expression
   | Scan of char list
-  | Assign of char * expression
+  | Assign of (char * expression) list
   | Comment of string
   | End 
   | NewLine
@@ -59,7 +59,7 @@ and expression_as_string = function
       "(" ^ expression_as_string e1 ^ " " ^ op_str ^ " " ^ expression_as_string e2 ^ ")"
   | ParenExpr e -> "(" ^ expression_as_string e ^ ")"
 
-let rec instruction_as_string = function
+  let rec instruction_as_string = function
   | Print expr_list ->
       "Print [" ^ String.concat "; " (List.map expr_as_string expr_list) ^ "]"
   | IfThen (e1, op, e2, instr) ->
@@ -75,7 +75,8 @@ let rec instruction_as_string = function
   | Goto e -> "Goto " ^ expression_as_string e
   | Scan char_list ->
       "Scan [" ^ String.concat ", " (List.map (fun c -> Char.escaped c) char_list) ^ "]"
-  | Assign (var, e) -> "Assign " ^ Char.escaped var ^ " = " ^ expression_as_string e
+  | Assign assignments ->
+      "Assign [" ^ String.concat "; " (List.map (fun (var, e) -> Char.escaped var ^ " = " ^ expression_as_string e) assignments) ^ "]"
   | Comment s -> "Comment \"" ^ s ^ "\""
   | End -> "End"
   | NewLine -> "NewLine"
@@ -167,16 +168,17 @@ and eval_instruction num instr lines env =
         eval_line next_line lines env;
       with
         | Failure _ -> ())
-  | Assign (var, e) ->
-      let value = eval_expression env e in
-      (* print_string "value = "; print_int value; print_newline(); *)
-      env := Env.add var value !env;
-      (* print_string "env apres = "; print_int (Env.find var !env); print_newline(); *)
-      (try
-        let next_line = find_smallest_greater lines num in
-        eval_line next_line lines env;
-      with
-        | Failure _ -> ())
+  | Assign assignments ->
+  List.iter (fun (var, e) ->
+    let value = eval_expression env e in
+    env := Env.add var value !env
+  ) assignments;
+  (try
+    let next_line = find_smallest_greater lines num in
+    eval_line next_line lines env;
+  with
+    | Failure _ -> ())
+    
   | Comment _ -> 
     (try
       let next_line = find_smallest_greater lines num in

@@ -26,10 +26,13 @@ instr:
   | SI e1 = expression op = relop e2 = expression ALORS i = instr { IfThen (e1, op, e2, i) }
   | VAVERS e = expression { Goto (e) }
   | ENTREE var_lst = var_list { Scan (var_lst) }
-  | v = VAR EQUALS e = expression { Assign (v, e) }
+  | assignments = separated_nonempty_list(COMMA, assignment) { Assign (assignments) }
   | FIN { End }
   | REM s = STRING { Comment (s) }
   | NL { NewLine }
+
+assignment:
+  | v = VAR EQUALS e = expression { (v, e) }
 
 expr_list:
   | exprs = separated_nonempty_list(COMMA, expr_or_string) { exprs }
