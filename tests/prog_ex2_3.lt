@@ -1,0 +1,5 @@
+5 REM "Ce programme est formidable."
+10 IMPRIME "Bonjour Paris"
+15 NL
+20 I = 0
+18 RETOURNE

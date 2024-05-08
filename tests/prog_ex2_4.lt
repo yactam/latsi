@@ -1,0 +1,7 @@
+5 IMPRIME "Programme stack overflow"
+6 NL
+7 SOUSROUTINE 15
+15 IMPRIME "Appel de sousroutine"
+16 NL
+17 SOUSROUTINE 15
+19 RETOURNE

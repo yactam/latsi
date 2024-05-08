@@ -22,3 +22,6 @@ let () =
     | Failure msg ->
       close_in channel;
       Printf.eprintf "Error %s\n" msg;
+    | Ast.Interpretation_error msg ->
+      Printf.eprintf "Interpretation error: %s\n" msg;
+      close_in channel;
