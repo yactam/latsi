@@ -37,6 +37,8 @@ type line =
 
 type program = line list
 
+
+
 let rec expr_as_string = function
   | String s -> "\"" ^ s ^ "\""
   | Expression e -> expression_as_string e
@@ -85,3 +87,35 @@ let program_as_string prog =
   String.concat "\n" (List.map line_as_string prog)
 
 (************************************************************************************)
+
+module Env = Map.Make(Char)
+let env = ref (Env.empty : int Env.t);;
+
+exception Interpretation_error of string
+
+let rec eval_expression env = function
+  | Num n -> n
+  | Var v -> (try Env.find v !env with Not_found -> 
+                                  raise (Interpretation_error ("Undefined variable: " ^ Char.escaped v)))
+  | UnaryOp (op, e) ->
+      let value = eval_expression env e in
+      (match op with
+       | Plus -> value
+       | Minus -> -value)
+  | BinaryOp (op, e1, e2) ->
+      let value1 = eval_expression env e1 in
+      let value2 = eval_expression env e2 in
+      (match op with
+       | Add -> value1 + value2
+       | Sub -> value1 - value2
+       | Mult -> value1 * value2
+       | Div -> 
+           if value2 = 0 then
+             raise (Interpretation_error "Division by zero")
+           else
+             value1 / value2)
+  | ParenExpr e -> eval_expression env e
+
+
+  
+  
