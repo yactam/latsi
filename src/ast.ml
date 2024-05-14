@@ -116,6 +116,11 @@ let rec eval_expression env = function
              value1 / value2)
   | ParenExpr e -> eval_expression env e
 
-
+  let rec find_smallest_greater : line list -> int -> line  = fun sorted_list n ->
+    match sorted_list with
+    | []      -> failwith ""
+    | l :: xs ->
+      let Line (x, _) = l in
+      if x > n then l else find_smallest_greater xs n
   
   
