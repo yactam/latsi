@@ -200,8 +200,9 @@ let initial_env env =
 
 let eval_program program =
   initial_env env;
-  let lines = List.sort (fun (Line(n1, _)) (Line(n2, _)) -> compare n1 n2) program in
+  let without_comment = List.filter (fun (Line(_, instr)) -> match instr with | Comment _ -> false | _ -> true ) program in
+  let lines = List.sort (fun (Line(n1, _)) (Line(n2, _)) -> compare n1 n2) without_comment in
   match lines with
-  | [] -> failwith "Empty program"
+  | [] -> raise (Failure "Empty program")
   | first_line::_ ->
       eval_line first_line lines env
