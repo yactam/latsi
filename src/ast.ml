@@ -116,81 +116,92 @@ let rec eval_expression env = function
              value1 / value2)
   | ParenExpr e -> eval_expression env e
 
-  let rec find_smallest_greater : line list -> int -> line  = fun sorted_list n ->
-    match sorted_list with
-    | []      -> failwith ""
-    | l :: xs ->
-      let Line (x, _) = l in
-      if x > n then l else find_smallest_greater xs n
-  
-  
-      let rec eval_expr env = function
-      | String string -> string
-      | Expression expression -> string_of_int (eval_expression env expression)
-    and eval_instruction num instr lines env =
-      match instr with
-      | Print expr_list ->
-          List.iter (fun expr -> print_string (eval_expr env expr)) expr_list;
-          (try
-            let next_line = find_smallest_greater lines num in
-            eval_line next_line lines env;
-          with
-            | Failure _ -> ())
-      | IfThen (e1, op, e2, instr) ->
-          let value1 = eval_expression env e1 in
-          let value2 = eval_expression env e2 in
-          let result =
-            match op with
-            | NotEq -> value1 != value2
-            | LessThan -> value1 < value2
-            | LessOrEqual -> value1 <= value2
-            | GreaterThan -> value1 > value2
-            | GreaterOrEqual -> value1 >= value2
-            | Equal -> value1 = value2
-          in
-          if result then eval_instruction num instr lines env 
-          else 
-          (try
-            let next_line = find_smallest_greater lines num in
-            eval_line next_line lines env;
-          with
-            | Failure _ -> ())
-      | Goto e ->
-        (let target = eval_expression env e in
-        let next_line = List.find_opt (fun (Line(n, _)) -> n = target) lines in
-        match next_line with
-        | None   -> failwith "Goto non-existing line"
-        | Some v -> eval_line v lines env)
-      | Scan char_list ->
-          List.iter (fun var -> let value = read_int () in env := Env.add var value !env) char_list;
-          (try
-            let next_line = find_smallest_greater lines num in
-            eval_line next_line lines env;
-          with
-            | Failure _ -> ())
-      | Assign (var, e) ->
-          let value = eval_expression env e in
-          env := Env.add var value !env;
-          (try
-            let next_line = find_smallest_greater lines num in
-            eval_line next_line lines env;
-          with
-            | Failure _ -> ())
-      | Comment _ -> 
-        (try
-          let next_line = find_smallest_greater lines num in
-          eval_line next_line lines env;
-        with
-          | Failure _ -> ())
-      | End -> ()
-      | NewLine ->
-        print_newline ();
-        (try
-            let next_line = find_smallest_greater lines num in
-            eval_line next_line lines env;
-          with
-            | Failure _ -> ())
-    
-    and eval_line : line -> line list -> int Env.t ref -> unit = fun line lines env ->
-      let Line(num, instr) = line in
-      eval_instruction num instr lines env
+let rec find_smallest_greater : line list -> int -> line  = fun sorted_list n ->
+  match sorted_list with
+  | []      -> failwith ""
+  | l :: xs ->
+    let Line (x, _) = l in
+    if x > n then l else find_smallest_greater xs n
+
+let rec eval_expr env = function
+  | String string -> string
+  | Expression expression -> string_of_int (eval_expression env expression)
+and eval_instruction num instr lines env =
+  match instr with
+  | Print expr_list ->
+      List.iter (fun expr -> print_string (eval_expr env expr)) expr_list;
+      (try
+        let next_line = find_smallest_greater lines num in
+        eval_line next_line lines env;
+      with
+        | Failure _ -> ())
+  | IfThen (e1, op, e2, instr) ->
+      let value1 = eval_expression env e1 in
+      let value2 = eval_expression env e2 in
+      let result =
+        match op with
+        | NotEq -> value1 != value2
+        | LessThan -> value1 < value2
+        | LessOrEqual -> value1 <= value2
+        | GreaterThan -> value1 > value2
+        | GreaterOrEqual -> value1 >= value2
+        | Equal -> value1 = value2
+      in
+      if result then eval_instruction num instr lines env 
+      else 
+      (try
+        let next_line = find_smallest_greater lines num in
+        eval_line next_line lines env;
+      with
+        | Failure _ -> ())
+  | Goto e ->
+    (let target = eval_expression env e in
+    let next_line = List.find_opt (fun (Line(n, _)) -> n = target) lines in
+    match next_line with
+    | None   -> failwith "Goto non-existing line"
+    | Some v -> eval_line v lines env)
+  | Scan char_list ->
+      List.iter (fun var -> let value = read_int () in env := Env.add var value !env) char_list;
+      (try
+        let next_line = find_smallest_greater lines num in
+        eval_line next_line lines env;
+      with
+        | Failure _ -> ())
+  | Assign (var, e) ->
+      let value = eval_expression env e in
+      env := Env.add var value !env;
+      (try
+        let next_line = find_smallest_greater lines num in
+        eval_line next_line lines env;
+      with
+        | Failure _ -> ())
+  | Comment _ -> 
+    (try
+      let next_line = find_smallest_greater lines num in
+      eval_line next_line lines env;
+    with
+      | Failure _ -> ())
+  | End -> ()
+  | NewLine ->
+    print_newline ();
+    (try
+        let next_line = find_smallest_greater lines num in
+        eval_line next_line lines env;
+      with
+        | Failure _ -> ())
+
+and eval_line : line -> line list -> int Env.t ref -> unit = fun line lines env ->
+  let Line(num, instr) = line in
+  eval_instruction num instr lines env
+
+let initial_env env =
+  let char_range = List.init 26 (fun i -> Char.chr (Char.code 'A' + i)) in
+  List.iter (fun c -> env := Env.add c 0 !env) char_range
+
+let eval_program program =
+  initial_env env;
+  let lines = List.sort (fun (Line(n1, _)) (Line(n2, _)) -> compare n1 n2) program in
+  match lines with
+  | [] -> failwith "Empty program"
+  | first_line::_ ->
+      eval_line first_line lines env
