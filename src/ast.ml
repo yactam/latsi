@@ -134,19 +134,19 @@ let rec min_list = function
 let find_smallest_greater lst n =
   min_list (List.filter (fun (Line(x, _)) -> x > n) lst)
 
-  let find_next_non_empty_line lines start_line =
-    let rec find_next_non_empty = function
-      | [] -> None  (* Aucune ligne non vide trouvée *)
-      | [_] -> None  (* La dernière ligne a été atteinte *)
-      | Line(num, instr)::((Line(next_num, next_instr))::_ as rest) ->
-          if num = start_line then  (* Trouver la première ligne après la ligne donnée *)
-            match instr with
-            | NewLine | Comment _ -> find_next_non_empty rest  (* Ignorer les lignes vides et les commentaires *)
-            | _ -> Some (Line(next_num, next_instr))  (* Trouver la première ligne non vide *)
-          else
-            find_next_non_empty rest
-    in
-    find_next_non_empty lines  
+let find_next_non_empty_line lines start_line =
+  let rec find_next_non_empty = function
+    | [] -> None 
+    | [_] -> None
+    | Line(num, instr)::((Line(next_num, next_instr))::_ as rest) ->
+        if num = start_line then
+          match instr with
+          | NewLine | Comment _ -> find_next_non_empty rest
+          | _ -> Some (Line(next_num, next_instr))
+        else
+          find_next_non_empty rest
+  in
+  find_next_non_empty lines  
     
 let print_lines lines =
   List.iter (fun (Line(n, instr)) ->
@@ -188,7 +188,7 @@ and eval_instruction num instr lines env =
     (let target = eval_expression env e in
     let next_line = List.find_opt (fun (Line(n, _)) -> n = target) lines in
     match next_line with
-    | None   -> failwith "Goto non-existing line"
+    | None   -> raise (Interpretation_error "Goto non-existing line")
     | Some v -> eval_line v lines env)
   | Scan char_list ->
       List.iter (fun var -> let value = read_int () in env := Env.add var value !env) char_list;
@@ -223,28 +223,20 @@ and eval_instruction num instr lines env =
       with
         | Failure _ -> ())
     | SousRoutine e ->
-        (* Évaluer l'expression pour obtenir la ligne cible *)
         let target = eval_expression env e in
-        (* Mettre à jour la pile de retour *)
         stack := num :: !stack;
-        (* Rechercher la ligne cible dans la liste des lignes *)
         let next_line = List.find_opt (fun (Line(n, _)) -> n = target) lines in
-        (* Si la ligne cible existe, l'exécuter, sinon, émettre une erreur *)
         (match next_line with
         | None -> raise (Interpretation_error "SOUSROUTINE: Line not found")
         | Some v -> eval_line v lines env)
     | Retourne ->
-        (* Dépiler la dernière ligne exécutée *)
         (match !stack with
         | [] -> raise (Interpretation_error "RETOURNE: Stack underflow")
         | last_line :: rest ->
-            (* Rechercher la première ligne non vide après la dernière SOUSROUTINE exécutée *)
             let next_non_empty_line = find_next_non_empty_line lines last_line in
-            (* Si une telle ligne existe, l'exécuter, sinon, émettre une erreur *)
             (match next_non_empty_line with
             | None -> raise (Interpretation_error "RETOURNE: No subsequent non-empty line found")
             | Some v ->
-              (* Mettre à jour la pile de retour *)
               stack := rest;
               eval_line v lines env);
             )
@@ -259,11 +251,10 @@ let initial_env env =
 
 let eval_program program =
   initial_env env;
-  try
-    let line = find_smallest_greater program 0 in
-    eval_line line program env
-  with
-  | Failure _ -> failwith "Empty program"
+  let without_comment = List.filter (fun (Line(_, instr)) -> match instr with | Comment _ -> false | _ -> true ) program in
+  match without_comment with
+  | [] -> failwith "Empty program"
+  | _  -> let line = find_smallest_greater without_comment 0 in eval_line line program env
   
   
   
