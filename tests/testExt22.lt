@@ -1,0 +1,3 @@
+20 REM "Test d'expressions complexes avec MultiAssign."
+25 A, B, C = 1+2, B+3, 7*2
+30 IMPRIME A, B, C

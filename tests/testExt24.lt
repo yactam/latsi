@@ -1,0 +1,3 @@
+50 REM "Test de references croisees dans MultiAssign."
+55 P, Q = Q+1, P+1
+60 IMPRIME P, Q

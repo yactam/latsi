@@ -1,0 +1,4 @@
+5 REM "Test d'affectations multiples avec dependance cyclique."
+10 X, Y, Z = 1, 2, 3
+15 X, Y, Z = Y, Z, X
+20 IMPRIME "Valeurs cycliques de X, Y, Z : ", X, ", ", Y, ", ", Z

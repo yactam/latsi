@@ -1,0 +1,4 @@
+5 REM "Test d'utilisation de variables dans des affectations multiples."
+10 A, B, C = 5, 10, 15
+15 A, B, C = B + 10, C + A, A + B
+20 IMPRIME "Nouvelles valeurs de A, B, C : ", A, ", ", B, ", ", C
