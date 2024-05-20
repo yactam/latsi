@@ -1,0 +1,8 @@
+1 - Utilisation
+    * Pour savoir comment vous pouvez utilisez le porjet vous pouvez regardez les instructions dans le readme
+
+2 - Parties Réalisées
+    * Les 4 étapes obligatoires (dans la branche master)
+    * La possibilité d’avoir plusieurs affectations qui se suivent sur la même ligne (dans la branche multi_assign)
+    * La possibilité d’avoir des instructions de la forme X,Y,Z = 1,2+5,4 avec un nombre quelconque de variables à gauche du = et le même nombre d’expressions à droite. (dans la branche extension2) 
+    * L'instruction SOUSROUTINE avec RETOURNE (dans la branche sousroutine)
